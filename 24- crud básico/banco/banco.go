@@ -3,12 +3,12 @@ package banco
 import (
 	"database/sql"
 
-	_ "github.com/go-sql-driver/mysql" // Driver de conexão
+	_ "github.com/go-sql-driver/mysql" // Driver de conexão com o MySQL
 )
 
 // Conectar abre a conexão com o banco de dados
 func Conectar() (*sql.DB, error) {
-	stringConexao := "root:jefff@/golang?charset=utf8&parseTime=True&loc=Local"
+	stringConexao := "root:jeff@/golang?charset=utf8&parseTime=True&loc=Local"
 
 	db, erro := sql.Open("mysql", stringConexao)
 	if erro != nil {
@@ -18,5 +18,6 @@ func Conectar() (*sql.DB, error) {
 	if erro = db.Ping(); erro != nil {
 		return nil, erro
 	}
+
 	return db, nil
 }
