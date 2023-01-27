@@ -126,11 +126,12 @@ func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
 	if linha.Next() {
 		if erro := linha.Scan(&usuario.ID, &usuario.Nome, &usuario.Email); erro != nil {
 			w.Write([]byte("Erro ao buscar o usuário."))
+			return
 		}
 	}
 
-	
-	if erro := json.NewDecoder(w).Encode(usuario); erro != nil {
+	w.WriteHeader(http.StatusOK)
+	if erro := json.NewEncoder(w).Encode(usuario); erro != nil {
 		w.Write([]byte("Erro ao converter o usuário para JSON."))
 		return
 	}
