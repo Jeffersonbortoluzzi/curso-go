@@ -161,15 +161,15 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db, erro := banco.Conectar()
-	if erro := json.Unmarshal(corpoRequisicao, &usuario); erro != nil {
+	if erro != nil {
 		w.Write([]byte("Erro ao conectar no banco de dados."))
 		return
 	}
 	defer db.Close()
 
-	statement, erro := db.Prepare("update usuarios set nome = ?, email = ? where = ?")
+	statement, erro := db.Prepare("update usuarios set nome = ?, email = ? where id = ?")
 	if erro != nil {
-		w.Write([]byte("Erro ao criar o statement"))
+		w.Write([]byte("Erro ao criar o statement."))
 		return
 	}
 	defer statement.Close()
