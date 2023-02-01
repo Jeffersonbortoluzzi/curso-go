@@ -72,7 +72,7 @@ func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	// SELECT * FROM USUARIOS
+	// SELECT * FROM USUARIOS, query vai retornar as linhas da tebela
 	linhas, erro := db.Query("select * from usuarios.")
 	if erro != nil {
 		w.Write([]byte("Erro ao buscar os usuários."))
@@ -135,5 +135,50 @@ func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Erro ao converter o usuário para JSON."))
 		return
 	}
+
+}
+
+// AtualizarUsuario - altera os dados de um usuário no banco de dados
+func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+
+	ID, erro := strconv.ParseUint(parametros["id"], 10, 32)
+	if erro != nil {
+		w.Write([]byte("Erro ao converter o parâmetro para inteiro."))
+		return
+	}
+
+	corpoRequisicao, erro := ioutil.ReadAll(r.Body)
+	if erro != nil {
+		w.Write([]byte("Erro ao leo o corpo da requisição."))
+		return
+	}
+
+	var usuario usuario
+	if erro := json.Unmarshal(corpoRequisicao, &usuario); erro != nil {
+		w.Write([]byte("Erro ao converter usuário para struct."))
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro := json.Unmarshal(corpoRequisicao, &usuario); erro != nil {
+		w.Write([]byte("Erro ao conectar no banco de dados."))
+		return
+	}
+	defer db.Close()
+
+	statement, erro := db.Prepare("update usuarios set nome = ?, email = ? where = ?")
+	if erro != nil {
+		w.Write([]byte("Erro ao criar o statement"))
+		return
+	}
+	defer statement.Close()
+
+	if _, erro := statement.Exec(usuario.Nome, usuario.Email, ID); erro != nil {
+		w.Write([]byte("Erro ao atualizar o usuário."))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 
 }
